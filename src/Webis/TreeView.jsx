@@ -1,27 +1,47 @@
 import { useState } from "react"
+import { Show } from "@legendapp/state/react"
 import { DndContext, rectIntersection, closestCenter, PointerSensor, useSensors, useSensor } from "@dnd-kit/core"
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { restrictToVerticalAxis, restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers"
 import { CSS, getEventCoordinates } from "@dnd-kit/utilities"
 
 import { HtmlDisplay } from "../ui/HtmlDisplay"
-import { app } from "./state"
+import { selected, tree } from "./state"
 
 export function TreeView(props) {
   return (
-    <HtmlDisplay
-      style={{ overflowY: "auto", overflowX: "hidden", borderRadius: "10px", backgroundColor: "rgba(0, 0, 200, 0.1)", scrollbarGutter: "stable both-edges" }}
-      {...props}
-    >
-      <div style={{ paddingTop: "5px", paddingBottom: "5px", color: "white", fontFamily: "Open Sans", fontSize: "18px" }}>
-        <SortableList />
+    <HtmlDisplay style={{}} {...props}>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          overflowY: "auto",
+          overflowX: "hidden",
+          borderRadius: "10px",
+          backgroundColor: "rgba(0, 0, 200, 0.1)",
+          scrollbarGutter: "stable both-edges",
+        }}
+        onClick={(e) => (e.stopPropagation(), selected.set(null))}
+      >
+        <div
+          style={{
+            paddingTop: "5px",
+            paddingBottom: "5px",
+            color: "white",
+            fontFamily: "Open Sans",
+            fontSize: "18px",
+            boxSizing: "border-box",
+          }}
+        >
+          <SortableList />
+        </div>
       </div>
     </HtmlDisplay>
   )
 }
 
 function SortableList() {
-  const elements = app.tree.get()
+  const elements = tree.get()
   const [activeId, setActiveId] = useState(null)
   const [activeDepth, setActiveDepth] = useState(null)
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 1 } }))
@@ -56,7 +76,7 @@ function SortableList() {
     const { active, over } = event
     if (!over || active.id === over.id) return
 
-    app.tree.set((prevTree) => {
+    tree.set((prevTree) => {
       const findPath = (tree, id, path = []) => {
         for (let i = 0; i < tree.length; i++) {
           const item = tree[i]
@@ -109,7 +129,6 @@ function SortableElement({ element, activeId, depth = 0 }) {
     data: { depth: depth },
   })
 
-  console.log(listeners)
   return (
     <div ref={setNodeRef} style={{ transform: CSS.Translate.toString(transform), transition }} {...attributes} {...listeners}>
       <Element element={element} activeId={activeId} depth={depth} />
@@ -120,7 +139,7 @@ function SortableElement({ element, activeId, depth = 0 }) {
 function Element({ element, activeId, depth = 0 }) {
   const children = element.children
   const hasChildren = Array.isArray(children) && children.length > 0
-  const isSelected = app.selected.get() === element.id
+  const isSelected = selected.get() === element.id
 
   return (
     <div
@@ -133,7 +152,7 @@ function Element({ element, activeId, depth = 0 }) {
       }}
       onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = hsla(0, 100, 50, 0.2 + depth * 0.05))}
       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = hsla(isSelected ? 0 : 220 + 10 * (depth + 2), 100, 50, 0.2 + depth * 0.05))}
-      onClick={(e) => (e.stopPropagation(), app.selected.set(element.id))}
+      onClick={(e) => (e.stopPropagation(), selected.set(element.id))}
     >
       {(activeId === element.id || !hasChildren) && (
         <div style={{ display: "flex", justifyContent: "space-between", padding: "0px 5px 0px 5px" }}>
@@ -165,23 +184,35 @@ function StartTag({ element }) {
     <div>
       <span>&lt;{element.component}</span>
 
-      <span>&nbsp;id=</span>
-      <span style={{ color: hsla(150, 100, 50, 1) }}>
-        &quot;
-        <span contentEditable suppressContentEditableWarning>
-          name
-        </span>
-        &quot;
-      </span>
+      <Show if={element.idName}>
+        {() => (
+          <>
+            <span>&nbsp;id=</span>
+            <span style={{ color: hsla(150, 100, 50, 1), cursor: "text" }}>
+              &quot;
+              <span contentEditable suppressContentEditableWarning>
+                name
+              </span>
+              &quot;
+            </span>
+          </>
+        )}
+      </Show>
 
-      <span>&nbsp;class=</span>
-      <span style={{ color: hsla(50, 100, 50, 1) }}>
-        &quot;
-        <span contentEditable suppressContentEditableWarning>
-          name
-        </span>
-        &quot;
-      </span>
+      <Show if={element.className}>
+        {() => (
+          <>
+            <span>&nbsp;class=</span>
+            <span style={{ color: hsla(50, 100, 50, 1), cursor: "text" }}>
+              &quot;
+              <span contentEditable suppressContentEditableWarning>
+                {element.className}
+              </span>
+              &quot;
+            </span>
+          </>
+        )}
+      </Show>
 
       <span>&gt;</span>
     </div>

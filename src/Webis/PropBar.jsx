@@ -1,7 +1,7 @@
 import { HtmlDisplay } from "../ui/HtmlDisplay"
 import { SortableList } from "../ui/SortableList"
 
-import { app } from "./state"
+import { properties } from "./state"
 
 export function PropBar(props) {
   return (
@@ -19,8 +19,8 @@ export function PropBar(props) {
 function Content() {
   return (
     <SortableList
-      items={app.properties.get()}
-      setItems={app.properties.set}
+      items={properties.get()}
+      setItems={properties.set}
       renderItem={(item) => (
         <div
           style={{

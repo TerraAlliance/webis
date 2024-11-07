@@ -1,9 +1,9 @@
 import { HtmlDisplay } from "../ui/HtmlDisplay"
 
-import { app } from "./state"
+import { tree } from "./state"
 
 export function WebView(props) {
-  const elements = app.tree.get()
+  const elements = tree.get()
   return (
     <HtmlDisplay style={{ overflowY: "auto", overflowX: "hidden", borderRadius: "10px", backgroundColor: "white" }} {...props}>
       {renderElements(elements)}

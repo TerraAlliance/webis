@@ -2,121 +2,141 @@
 import { observable } from "@legendapp/state"
 import { enableReactTracking } from "@legendapp/state/config/enableReactTracking"
 enableReactTracking({ auto: true })
+import cxs from "cxs"
 
 // const gun = GUN()
 // const webis = gun.get("webis")
 // const elements = webis.get("elements")
 
+export const tree = observable([])
+export const selected = observable()
+export const properties = observable(["prop1", "prop2", "prop3"])
+export const classes = observable({
+  container: cxs({
+    display: "flex",
+    backgroundColor: "pink",
+    border: "2px solid deeppink",
+    marginBottom: "2px",
+    height: "auto",
+    minHeight: "100px",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "5px",
+    gap: "5px",
+    boxSizing: "border-box",
+    borderRadius: "10px",
+  }),
+  font: cxs({ fontFamily: "Open Sans" }),
+})
+
+const newId = () => crypto.randomUUID()
+
 export const app = observable()
 
-import shuffle from "lodash/shuffle"
-
-const uniqueRandomGenerator = (range) => {
-  let nums = []
-  return () => {
-    if (nums.length === 0) {
-      nums = shuffle([...Array(range).keys()].map((n) => n + 1))
-    }
-    return nums.pop()
-  }
-}
-
-const getUniqueRandom12 = uniqueRandomGenerator(12)
-
-function randomHSL(hueRange = [0, 360], saturation, lightness) {
-  const [hueMin, hueMax] = hueRange
-  const hue = Math.floor(Math.random() * (hueMax - hueMin + 1)) + hueMin
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`
-}
-
-app.components.set([
-  {
-    component: "div",
-    props: {
-      style: {
-        display: "flex",
-        backgroundColor: () => randomHSL([0, 40], 100, 80),
-        height: "auto",
-        minHeight: "100px",
-        width: "100%",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "5px",
-        gap: "5px",
-        boxSizing: "border-box",
-        borderRadius: "10px",
-      },
-    },
-    children: [],
-    id: crypto.randomUUID(),
-  },
-  {
-    component: "p",
-    props: { style: { color: "black", fontFamily: "Open Sans" }, contentEditable: true },
-    children: "This is a paragraph.",
-    id: crypto.randomUUID(),
-  },
-  { component: "span", props: { style: { color: "black" }, contentEditable: true }, children: "span", id: crypto.randomUUID() },
-  { component: "h1", props: { style: { color: "black", fontFamily: "Open Sans" }, contentEditable: true }, children: "Title", id: crypto.randomUUID() },
-  { component: "h2", props: { style: { color: "black", fontFamily: "Open Sans" }, contentEditable: true }, children: "Title", id: crypto.randomUUID() },
-  { component: "h3", props: { style: { color: "black", fontFamily: "Open Sans" }, contentEditable: true }, children: "Title", id: crypto.randomUUID() },
-  { component: "a", props: { href: "#", contentEditable: true, fontFamily: "Open Sans" }, children: "This is a link.", id: crypto.randomUUID() },
-  { component: "button", props: { className: "button", style: { color: "black" }, contentEditable: true }, children: "Click me", id: crypto.randomUUID() },
-  {
-    component: "img",
-    props: { src: () => "./cats/cat" + getUniqueRandom12() + ".webp", width: "180px", height: "180px", style: { borderRadius: "10px" } },
-    id: crypto.randomUUID(),
-  },
+export const components = observable([
+  { component: "div", props: { className: classes.get()["container"] }, children: [], className: "container", id: newId() },
+  { component: "p", props: { className: classes.get()["font"], contentEditable: true }, children: "This is a paragraph.", className: "font", id: newId() },
+  { component: "span", props: { className: classes.get()["font"], contentEditable: true }, children: "span", className: "font", id: newId() },
+  { component: "h1", props: { className: classes.get()["font"], contentEditable: true }, children: "Title", className: "font", id: newId() },
+  { component: "h2", props: { className: classes.get()["font"], contentEditable: true }, children: "Title", className: "font", id: newId() },
+  { component: "h3", props: { className: classes.get()["font"], contentEditable: true }, children: "Title", className: "font", id: newId() },
+  { component: "h4", props: { className: classes.get()["font"], contentEditable: true }, children: "Title", className: "font", id: newId() },
+  { component: "h5", props: { className: classes.get()["font"], contentEditable: true }, children: "Title", className: "font", id: newId() },
+  { component: "h6", props: { className: classes.get()["font"], contentEditable: true }, children: "Title", className: "font", id: newId() },
+  { component: "a", props: { className: classes.get()["font"], href: "#" }, children: "This is a link.", className: "font", id: newId() },
+  { component: "button", props: { className: classes.get()["font"] }, children: "Click me", className: "font", id: newId() },
+  { component: "img", props: { src: () => getRandomCat(), width: "180px", height: "180px", style: { borderRadius: "10px" } }, id: newId() },
+  { component: "input", className: "font", id: newId() },
 ])
 
-app.properties.set(["prop1", "prop2", "prop3"])
-
-app.tree.set([])
-
-export function addElement(tree, component, props = {}, children = null, parentId = null, index = null) {
-  const newElement = {
-    component,
-    props,
-    children,
-    id: crypto.randomUUID(),
+const getRandomCat = (() => {
+  let nums = []
+  return () => {
+    if (!nums.length) nums = [...Array(12).keys()].map((n) => n + 1).sort(() => Math.random() - 0.5)
+    return `./cats/cat${nums.pop()}.webp`
   }
+})()
 
-  // Create a deep copy of the tree to maintain immutability
+export function addElement(component, props = {}, children = null, className, parentId = null, index = null) {
+  const newElement = { component, props, children, className, id: newId() }
   const updatedTree = JSON.parse(JSON.stringify(tree.get()))
 
-  if (!parentId) {
-    // No parentId specified, add to root level
-    if (index !== null && index >= 0 && index <= updatedTree.length) {
-      updatedTree.splice(index, 0, newElement)
-    } else {
-      updatedTree.push(newElement)
-    }
-    tree.set(updatedTree)
-    return
-  }
-
-  // Helper function to find and add to parent within the copied tree
-  function addToParent(elements) {
-    for (const el of elements) {
-      if (el.id === parentId) {
-        // If parentId matches, add new element to this parent's children
-        if (!el.children) {
-          el.children = []
-        }
-        if (index !== null && index >= 0 && index <= el.children.length) {
-          el.children.splice(index, 0, newElement)
+  const addToParent = (elements) => {
+    for (const element of elements) {
+      if (element.id === parentId) {
+        if (index !== null && index >= 0 && index <= element.children.length) {
+          element.children.splice(index, 0, newElement)
         } else {
-          el.children.push(newElement)
+          element.children.push(newElement)
         }
         return true
-      } else if (el.children) {
-        // Recursively search in children
-        if (addToParent(el.children)) return true
       }
+      if (element.children && addToParent(element.children)) return true
     }
     return false
   }
 
-  addToParent(updatedTree)
+  if (parentId) {
+    addToParent(updatedTree)
+  } else {
+    index === null ? updatedTree.push(newElement) : updatedTree.splice(index, 0, newElement)
+  }
+
   tree.set(updatedTree)
 }
+// function randomHSL(hueRange = [0, 360], saturation, lightness) {
+//   const [hueMin, hueMax] = hueRange
+//   const hue = Math.floor(Math.random() * (hueMax - hueMin + 1)) + hueMin
+//   return `hsl(${hue}, ${saturation}%, ${lightness}%)`
+// }
+
+// const button3d = cxs({
+//   position: "relative",
+//   display: "inline-block",
+//   cursor: "pointer",
+//   outline: "none",
+//   verticalAlign: "middle",
+//   textDecoration: "none",
+//   fontSize: "inherit",
+//   fontFamily: "inherit",
+//   fontWeight: 600,
+//   color: "#382b22",
+//   textTransform: "uppercase",
+//   padding: "1.25em 2em",
+//   background: "#fff0f0",
+//   border: "2px solid #b18597",
+//   borderRadius: "0.75em",
+//   transformStyle: "preserve-3d",
+//   transition: "transform 150ms cubic-bezier(0, 0, 0.58, 1), background 150ms cubic-bezier(0, 0, 0.58, 1)",
+//   ":before": {
+//     position: "absolute",
+//     content: '""',
+//     width: "100%",
+//     height: "100%",
+//     top: 0,
+//     left: 0,
+//     right: 0,
+//     bottom: 0,
+//     background: "#f9c4d2",
+//     borderRadius: "inherit",
+//     boxShadow: "0 0 0 2px #b18597",
+//     transform: "translate3d(0, 0.75em, -1em)",
+//     transition: "transform 150ms cubic-bezier(0, 0, 0.58, 1), box-shadow 150ms cubic-bezier(0, 0, 0.58, 1)",
+//   },
+//   ":hover": {
+//     background: "#ffe9e9",
+//     transform: "translate(0, 0.25em)",
+//     ":before": {
+//       transform: "translate3d(0, 0.5em, -1em)",
+//     },
+//   },
+//   ":active": {
+//     background: "#ffe9e9",
+//     transform: "translate(0em, 0.75em)",
+//     ":before": {
+//       boxShadow: "0 0 0 2px #b18597, 0 0 #ffe3e2",
+//       transform: "translate3d(0, 0, -1em)",
+//     },
+//   },
+// })

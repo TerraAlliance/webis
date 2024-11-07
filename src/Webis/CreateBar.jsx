@@ -1,7 +1,7 @@
 import { HtmlDisplay } from "../ui/HtmlDisplay"
 import { SortableList } from "../ui/SortableList"
 
-import { app, addElement } from "./state"
+import { selected, components, addElement } from "./state"
 
 export function CreateBar(props) {
   return (
@@ -19,8 +19,8 @@ export function CreateBar(props) {
 function Content() {
   return (
     <SortableList
-      items={app.components.get()}
-      setItems={app.components.set}
+      items={components.get()}
+      setItems={components.set}
       renderItem={(item) => (
         <div
           style={{
@@ -34,7 +34,7 @@ function Content() {
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsla(220, 100%, 50%, 0.15)")}
           onClick={(e) => {
             e.stopPropagation()
-            addElement(app.tree, item.component, evaluateObject(item.props), item.children, app.selected.get(), null)
+            addElement(item.component, evaluateObject(item.props), item.children, item.className, selected.get(), null)
           }}
         >
           <span style={{ color: "white", lineHeight: "30px", userSelect: "none" }}>{item.component}</span>
@@ -45,6 +45,10 @@ function Content() {
 }
 
 const evaluateObject = (obj) => {
+  if (obj === undefined || obj === null) {
+    return {}
+  }
+
   return Object.fromEntries(
     Object.entries(obj).map(([key, value]) => {
       if (typeof value === "function") {

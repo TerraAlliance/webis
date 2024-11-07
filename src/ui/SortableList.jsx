@@ -19,7 +19,13 @@ export function SortableList({ items, renderItem, setItems }) {
 
   function handleDragEnd(event) {
     const { active, over } = event
-    if (active.id !== over.id) setItems((prev) => arrayMove(prev, prev.indexOf(active.id), prev.indexOf(over.id)))
+    if (active.id !== over.id) {
+      setItems((prev) => {
+        const oldIndex = prev.findIndex((item) => item.id === active.id)
+        const newIndex = prev.findIndex((item) => item.id === over.id)
+        return arrayMove(prev, oldIndex, newIndex)
+      })
+    }
   }
 }
 

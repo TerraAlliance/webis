@@ -21,7 +21,7 @@ function App() {
     <div style={{ position: "absolute", width: "100%", height: "100%" }}>
       <Canvas>
         <OrthographicCamera zoom={1} makeDefault position={[0, 0, 5000]} far={10000} />
-        <OrbitControls enabled={true} enableZoom={false} />
+        <OrbitControls enabled={false} enableZoom={false} />
         <Body />
         <Lights />
       </Canvas>

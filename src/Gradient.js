@@ -435,14 +435,18 @@ class Gradient {
       }),
       e(this, "animate", (e) => {
         if (!this.shouldSkipFrame(e) || this.isMouseDown) {
-          if (((this.t += Math.min(e - this.last, 1e3 / 15)), (this.last = e), this.isMouseDown)) {
+          if (((this.t += Math.min(e - this.last, 1e3 / 200)), (this.last = e), this.isMouseDown)) {
             let e = 160
             this.isMetaKey && (e = -160), (this.t += e)
           }
           ;(this.mesh.material.uniforms.u_time.value = this.t), this.minigl.render()
         }
-        if (0 !== this.last && this.isStatic) return this.minigl.render(), void this.disconnect()
-        ;/*this.isIntersecting && */ (this.conf.playing || this.isMouseDown) && requestAnimationFrame(this.animate)
+        if (0 !== this.last && this.isStatic)
+          return (
+            this.minigl.render(), void this.disconnect()
+            /*this.isIntersecting && */
+          )
+        ;(this.conf.playing || this.isMouseDown) && requestAnimationFrame(this.animate)
       }),
       e(this, "addIsLoadedClass", () => {
         /*this.isIntersecting && */ !this.isLoadedClass &&
@@ -489,7 +493,7 @@ class Gradient {
           requestAnimationFrame(() => {
             this.el && ((this.computedCanvasStyle = getComputedStyle(this.el)), this.waitForCssVars())
           }))
-          /*
+    /*
         this.scrollObserver = await s.create(.1, !1),
         this.scrollObserver.observe(this.el),
         this.scrollObserver.onSeparate(() => {

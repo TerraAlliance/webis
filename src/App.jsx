@@ -21,7 +21,7 @@ function App() {
     <div style={{ position: "absolute", width: "100%", height: "100%" }}>
       <Canvas>
         <OrthographicCamera zoom={1} makeDefault position={[0, 0, 5000]} far={10000} />
-        <OrbitControls enabled={false} enableZoom={false} />
+        <OrbitControls enabled={true} enableZoom={false} />
         <Body />
         <Lights />
       </Canvas>
@@ -54,8 +54,10 @@ function Pages(props) {
 
   return (
     <PageSlider active={active} {...props}>
-      <Webis position={[0, 0, 0]} />
-      <FilesIcon size={500} width={50} height={50} />
+      <Webis />
+      <>
+        <FilesIcon position={[0, 0, 0]} size={200} width={50} height={50} />
+      </>
     </PageSlider>
   )
 }

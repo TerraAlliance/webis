@@ -1,22 +1,37 @@
-import { HtmlDisplay } from "../ui/HtmlDisplay"
+import cxs from "cxs"
 
-import { tree } from "./state"
+import { HtmlDisplay } from "../ui/HtmlDisplay"
+import { classes, tree } from "./state"
 
 export function WebView(props) {
-  const elements = tree.get()
   return (
     <HtmlDisplay style={{ overflowY: "auto", overflowX: "hidden", borderRadius: "10px", backgroundColor: "white" }} {...props}>
-      {renderElements(elements)}
+      <Content />
     </HtmlDisplay>
   )
 }
 
-function renderElements(elements) {
+function Content() {
+  const elements = tree.get()
+  const classMap = classes.get()
+  return <>{renderElements(elements, classMap)}</>
+}
+
+function renderElements(elements, classMap) {
   return elements.map((element) => {
     const { id, component: Component, props, children } = element
+    const { className, ...remainingProps } = props
+
     return (
-      <Component {...props} key={id} style={props.style}>
-        {Array.isArray(children) ? renderElements(children) : children}
+      <Component
+        className={className && cxs(classMap[className])}
+        {...remainingProps}
+        contentEditable
+        suppressContentEditableWarning
+        key={id}
+        style={props.style}
+      >
+        {Array.isArray(children) ? renderElements(children, classMap) : children}
       </Component>
     )
   })

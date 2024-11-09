@@ -1,16 +1,16 @@
 import { useState } from "react"
-import { Show } from "@legendapp/state/react"
 import { DndContext, rectIntersection, closestCenter, PointerSensor, useSensors, useSensor } from "@dnd-kit/core"
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { restrictToVerticalAxis, restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers"
 import { CSS, getEventCoordinates } from "@dnd-kit/utilities"
 
 import { HtmlDisplay } from "../ui/HtmlDisplay"
-import { selected, tree } from "./state"
+import { tree, properties, selected } from "./state"
+import { hsla } from "./helpers"
 
 export function TreeView(props) {
   return (
-    <HtmlDisplay style={{}} {...props}>
+    <HtmlDisplay style={{ backdropFilter: "blur(5px)" }} {...props}>
       <div
         style={{
           width: "100%",
@@ -18,7 +18,7 @@ export function TreeView(props) {
           overflowY: "auto",
           overflowX: "hidden",
           borderRadius: "10px",
-          backgroundColor: "rgba(0, 0, 200, 0.1)",
+          backgroundColor: "hsla(220, 100%, 50%, 0.2)",
           scrollbarGutter: "stable both-edges",
         }}
         onClick={(e) => (e.stopPropagation(), selected.set(null))}
@@ -139,7 +139,9 @@ function SortableElement({ element, activeId, depth = 0 }) {
 function Element({ element, activeId, depth = 0 }) {
   const children = element.children
   const hasChildren = Array.isArray(children) && children.length > 0
-  const isSelected = selected.get() === element.id
+  const isSelected = selected.get()?.id === element.id
+  const color = hsla(220 + depth * 100, 100, 50, 0.2 + depth * 0.05)
+  const selectedColor = hsla(0, 100, 50, 0.2 + depth * 0.05)
 
   return (
     <div
@@ -147,19 +149,15 @@ function Element({ element, activeId, depth = 0 }) {
         margin: "4px",
         padding: "2px",
         borderRadius: "5px",
-        backgroundColor: hsla(isSelected ? 0 : 220 + 10 * (depth + 2), 100, 50, 0.2 + depth * 0.05),
+        backgroundColor: isSelected ? selectedColor : color,
         cursor: "pointer",
+        border: "2px solid " + (isSelected ? hsla(0, 100, 50, 1) : color),
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = hsla(0, 100, 50, 0.2 + depth * 0.05))}
-      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = hsla(isSelected ? 0 : 220 + 10 * (depth + 2), 100, 50, 0.2 + depth * 0.05))}
-      onClick={(e) => (e.stopPropagation(), selected.set(element.id))}
+      onMouseEnter={(e) => (e.currentTarget.style.borderColor = hsla(0, 100, 50, 1))}
+      onMouseLeave={(e) => (e.currentTarget.style.borderColor = isSelected ? selectedColor : color)}
+      onClick={(e) => (e.stopPropagation(), selected.set(element), properties.set(element.props))}
     >
-      {(activeId === element.id || !hasChildren) && (
-        <div style={{ display: "flex", justifyContent: "space-between", padding: "0px 5px 0px 5px" }}>
-          <StartTag element={element} />
-          <EndTag element={element} />
-        </div>
-      )}
+      {(activeId === element.id || !hasChildren) && <StartTag element={element} closed />}
       {activeId !== element.id && hasChildren && (
         <>
           <div style={{ paddingLeft: "5px" }}>
@@ -179,50 +177,34 @@ function Element({ element, activeId, depth = 0 }) {
   )
 }
 
-function StartTag({ element }) {
+function StartTag({ element, closed = false }) {
   return (
-    <div>
+    <>
       <span>&lt;{element.component}</span>
-
-      <Show if={element.idName}>
-        {() => (
-          <>
-            <span>&nbsp;id=</span>
-            <span style={{ color: hsla(150, 100, 50, 1), cursor: "text" }}>
-              &quot;
-              <span contentEditable suppressContentEditableWarning>
-                name
-              </span>
-              &quot;
-            </span>
-          </>
-        )}
-      </Show>
-
-      <Show if={element.className}>
-        {() => (
-          <>
-            <span>&nbsp;class=</span>
-            <span style={{ color: hsla(50, 100, 50, 1), cursor: "text" }}>
-              &quot;
-              <span contentEditable suppressContentEditableWarning>
-                {element.className}
-              </span>
-              &quot;
-            </span>
-          </>
-        )}
-      </Show>
-
+      {Object.entries(element.props).map(([name, value], index) => (
+        <Attribute key={index} color={hsla(150, 100, 50, 1)} value={typeof value === "object" ? JSON.stringify(value) : value} name={name} />
+      ))}
+      {closed && <span>/</span>}
       <span>&gt;</span>
-    </div>
+    </>
+  )
+}
+
+function Attribute({ color, value, name }) {
+  return (
+    <>
+      <span>&nbsp;{name}=</span>
+      <span style={{ color: color, cursor: "text" }}>
+        {/* &quot; */}
+        <span contentEditable suppressContentEditableWarning spellcheck="false">
+          {value}
+        </span>
+        {/* &quot; */}
+      </span>
+    </>
   )
 }
 
 function EndTag({ element }) {
-  return <span>&lt;{element.component}&gt;</span>
-}
-
-function hsla(h, s, l, a) {
-  return `hsla(${h}, ${s}%, ${l}%, ${a})`
+  return <span>&lt;/{element.component}&gt;</span>
 }

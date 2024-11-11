@@ -6,18 +6,14 @@ import { addElement } from "./helpers"
 
 export function CreateBar(props) {
   return (
-    <HtmlDisplay
-      style={{
-        overflowY: "auto",
-        overflowX: "hidden",
-        borderRadius: "10px",
-        backgroundColor: "hsla(220, 100%, 50%, 0.2)",
-        scrollbarGutter: "stable both-edges",
-      }}
-      {...props}
-    >
-      <div style={{ paddingTop: "5px", paddingBottom: "5px", fontFamily: "Open Sans", fontSize: "18px" }}>
-        <Content />
+    <HtmlDisplay {...props}>
+      <div
+        className="w-full h-full bg-blue-500/20 border border-blue-500/50 overflow-y-auto overflow-x-hidden rounded-lg"
+        style={{ backgroundColor: "hsla(220, 100%, 50%, 0.2)", scrollbarGutter: "stable both-edges" }}
+      >
+        <div className="pt-1 pb-1 text-white font-open-sans text-base box-border">
+          <Content />
+        </div>
       </div>
     </HtmlDisplay>
   )

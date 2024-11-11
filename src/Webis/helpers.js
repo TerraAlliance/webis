@@ -15,7 +15,7 @@ export const getRandomCat = (() => {
 })()
 
 export function objectToKeyValueArray(obj = {}) {
-  return Object.entries(obj).map(([key, value]) => ({ [key]: value }))
+  return Object.entries(obj).map(([key, value]) => ({ [key]: value, id: newId() }))
 }
 
 export function addElement(tree, component, props = {}, children = null, parentId = null, index = null) {

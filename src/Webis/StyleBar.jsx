@@ -1,4 +1,5 @@
-import { useObservable } from "@legendapp/state/react"
+import { observable } from "@legendapp/state"
+import { observe } from "@legendapp/state"
 
 import { HtmlDisplay } from "../ui/HtmlDisplay"
 import { SortableList } from "../ui/SortableList"
@@ -6,20 +7,22 @@ import { classes, selected, tree } from "./state"
 import { objectToKeyValueArray, hsla, editElement } from "./helpers"
 import ContentEditable from "react-contenteditable"
 
+const style = observable([])
+
+observe(selected, (e) => {
+  style.set(objectToKeyValueArray({ ...classes.get()[e.value?.props.className], ...e.value?.props?.style }))
+})
+
 export function StyleBar(props) {
   return (
-    <HtmlDisplay
-      style={{
-        overflowY: "auto",
-        overflowX: "hidden",
-        borderRadius: "10px",
-        backgroundColor: "hsla(0, 100%, 50%, 0.2)",
-        scrollbarGutter: "stable both-edges",
-      }}
-      {...props}
-    >
-      <div style={{ paddingTop: "5px", paddingBottom: "5px", fontFamily: "Open Sans", fontSize: "18px" }}>
-        <Content />
+    <HtmlDisplay {...props}>
+      <div
+        className="w-full h-full bg-red-500/20 border border-red-500/50 overflow-y-auto overflow-x-hidden rounded-lg"
+        style={{ backgroundColor: "hsla(0, 100%, 50%, 0.1)", scrollbarGutter: "stable both-edges" }}
+      >
+        <div className="pt-1 pb-1 text-white font-open-sans text-base box-border">
+          <Content />
+        </div>
       </div>
     </HtmlDisplay>
   )
@@ -28,11 +31,7 @@ import { useRef } from "react"
 
 function Content() {
   const selectedElement = selected.get()
-  const classMap = classes.get()
-  const style = useObservable()
   const editedValues = useRef({})
-
-  style.set(objectToKeyValueArray({ ...classMap[selectedElement?.props.className], ...selectedElement?.props?.style }))
 
   return (
     <SortableList

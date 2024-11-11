@@ -3,6 +3,7 @@ import { DndContext, rectIntersection, closestCenter, PointerSensor, useSensors,
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { restrictToVerticalAxis, restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers"
 import { CSS, getEventCoordinates } from "@dnd-kit/utilities"
+import clsx from "clsx"
 
 import { HtmlDisplay } from "../ui/HtmlDisplay"
 import { tree, selected, hovered } from "./state"
@@ -10,16 +11,13 @@ import { hsla } from "./helpers"
 
 export function TreeView(props) {
   return (
-    <HtmlDisplay style={{ backdropFilter: "blur(5px)" }} {...props}>
+    <HtmlDisplay {...props}>
       <div
-        className="w-full h-full overflow-y-auto overflow-x-hidden rounded-lg"
-        style={{
-          backgroundColor: "hsla(220, 100%, 50%, 0.2)",
-          scrollbarGutter: "stable both-edges",
-        }}
+        className="w-full h-full bg-blue-500/20 border border-blue-500/50  overflow-y-auto overflow-x-hidden rounded-lg"
+        style={{ scrollbarGutter: "stable both-edges" }}
         onClick={(e) => (e.stopPropagation(), selected.set(null))}
       >
-        <div className="pt-1 pb-1 text-white font-open-sans text-lg box-border">
+        <div className="pt-1 pb-1 text-white font-open-sans text-base box-border">
           <SortableList />
         </div>
       </div>
@@ -123,22 +121,20 @@ function SortableElement({ element, activeId, depth = 0 }) {
   )
 }
 
-import clsx from "clsx"
-
 function Element({ element, activeId, depth = 0 }) {
   const children = element.children
   const hasChildren = Array.isArray(children) && children.length > 0
   const isHovered = hovered.get()?.id === element.id
   const isSelected = selected.get()?.id === element.id
-  const bgColors = ["bg-blue-500/20", "bg-purple-500/20", "bg-yellow-500/20"]
-  const borderColors = ["border-blue-500/50", "border-purple-500/50", "border-yellow-500/50"]
+  const bgColors = ["bg-blue-500/20", "bg-purple-500/20", "bg-red-500/20", "bg-yellow-500/20"]
+  const borderColors = ["border-blue-500/50", "border-purple-500/50", "border-red-500/50", "border-yellow-500/50"]
 
   return (
     <div
       className={clsx(
         "m-1 p-0.5 rounded cursor-pointer border-2",
-        isHovered ? "bg-emerald-500/50" : isSelected ? "bg-rose-500/50" : bgColors[depth % bgColors.length],
-        isHovered ? "border-emerald-500/80" : isSelected ? "border-rose-500/80" : borderColors[depth % borderColors.length]
+        isHovered || isSelected ? "bg-emerald-500/50" : bgColors[depth % bgColors.length],
+        isHovered || isSelected ? "border-emerald-500/80" : borderColors[depth % borderColors.length]
       )}
       onClick={(e) => (e.stopPropagation(), selected.set(element))}
       onMouseOver={(e) => (e.stopPropagation(), hovered.set(element))}
@@ -183,7 +179,7 @@ function Attribute({ color, value, name }) {
       <span>&nbsp;{name}=</span>
       <span style={{ color: color, cursor: "text" }}>
         {/* &quot; */}
-        <span contentEditable suppressContentEditableWarning spellcheck="false">
+        <span contentEditable suppressContentEditableWarning>
           {value}
         </span>
         {/* &quot; */}

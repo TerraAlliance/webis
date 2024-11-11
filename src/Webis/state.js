@@ -16,7 +16,7 @@ export const classes = observable({
   container: {
     display: "flex",
     flexDirection: "row",
-    backgroundColor: "hsla(320, 100%, 50%, 0.3)",
+    backgroundColor: "hsla(320, 100%, 50%, 0.2)",
     border: "2px solid hotpink",
     minHeight: "50px",
     marginBottom: "2px",
@@ -41,9 +41,6 @@ export const components = observable([
   { component: "h1", props: { className: "font" }, children: "Title", id: newId() },
   { component: "h2", props: { className: "font" }, children: "Title", id: newId() },
   { component: "h3", props: { className: "font" }, children: "Title", id: newId() },
-  { component: "h4", props: { className: "font" }, children: "Title", id: newId() },
-  { component: "h5", props: { className: "font" }, children: "Title", id: newId() },
-  { component: "h6", props: { className: "font" }, children: "Title", id: newId() },
   { component: "a", props: { className: "font", href: "#" }, children: "This is a link.", id: newId() },
   { component: "button", props: { className: "font" }, children: "Click me", id: newId() },
   { component: "img", props: { className: "image", src: () => getRandomCat(), width: "200px", height: "200px" }, id: newId() },

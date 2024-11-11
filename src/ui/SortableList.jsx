@@ -33,7 +33,7 @@ function SortableItem({ item, renderItem }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id })
 
   return (
-    <div ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition }} {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={{ transform: CSS.Translate.toString(transform), transition }} {...attributes} {...listeners}>
       {renderItem(item)}
     </div>
   )

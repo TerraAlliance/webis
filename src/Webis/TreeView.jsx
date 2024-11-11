@@ -5,34 +5,21 @@ import { restrictToVerticalAxis, restrictToFirstScrollableAncestor } from "@dnd-
 import { CSS, getEventCoordinates } from "@dnd-kit/utilities"
 
 import { HtmlDisplay } from "../ui/HtmlDisplay"
-import { tree, properties, selected } from "./state"
+import { tree, selected, hovered } from "./state"
 import { hsla } from "./helpers"
 
 export function TreeView(props) {
   return (
     <HtmlDisplay style={{ backdropFilter: "blur(5px)" }} {...props}>
       <div
+        className="w-full h-full overflow-y-auto overflow-x-hidden rounded-lg"
         style={{
-          width: "100%",
-          height: "100%",
-          overflowY: "auto",
-          overflowX: "hidden",
-          borderRadius: "10px",
           backgroundColor: "hsla(220, 100%, 50%, 0.2)",
           scrollbarGutter: "stable both-edges",
         }}
         onClick={(e) => (e.stopPropagation(), selected.set(null))}
       >
-        <div
-          style={{
-            paddingTop: "5px",
-            paddingBottom: "5px",
-            color: "white",
-            fontFamily: "Open Sans",
-            fontSize: "18px",
-            boxSizing: "border-box",
-          }}
-        >
+        <div className="pt-1 pb-1 text-white font-open-sans text-lg box-border">
           <SortableList />
         </div>
       </div>
@@ -136,26 +123,26 @@ function SortableElement({ element, activeId, depth = 0 }) {
   )
 }
 
+import clsx from "clsx"
+
 function Element({ element, activeId, depth = 0 }) {
   const children = element.children
   const hasChildren = Array.isArray(children) && children.length > 0
+  const isHovered = hovered.get()?.id === element.id
   const isSelected = selected.get()?.id === element.id
-  const color = hsla(220 + depth * 100, 100, 50, 0.2 + depth * 0.05)
-  const selectedColor = hsla(0, 100, 50, 0.2 + depth * 0.05)
+  const bgColors = ["bg-blue-500/20", "bg-purple-500/20", "bg-yellow-500/20"]
+  const borderColors = ["border-blue-500/50", "border-purple-500/50", "border-yellow-500/50"]
 
   return (
     <div
-      style={{
-        margin: "4px",
-        padding: "2px",
-        borderRadius: "5px",
-        backgroundColor: isSelected ? selectedColor : color,
-        cursor: "pointer",
-        border: "2px solid " + (isSelected ? hsla(0, 100, 50, 1) : color),
-      }}
-      onMouseEnter={(e) => (e.currentTarget.style.borderColor = hsla(0, 100, 50, 1))}
-      onMouseLeave={(e) => (e.currentTarget.style.borderColor = isSelected ? selectedColor : color)}
-      onClick={(e) => (e.stopPropagation(), selected.set(element), properties.set(element.props))}
+      className={clsx(
+        "m-1 p-0.5 rounded cursor-pointer border-2",
+        isHovered ? "bg-emerald-500/50" : isSelected ? "bg-rose-500/50" : bgColors[depth % bgColors.length],
+        isHovered ? "border-emerald-500/80" : isSelected ? "border-rose-500/80" : borderColors[depth % borderColors.length]
+      )}
+      onClick={(e) => (e.stopPropagation(), selected.set(element))}
+      onMouseOver={(e) => (e.stopPropagation(), hovered.set(element))}
+      onMouseOut={(e) => (e.stopPropagation(), hovered.set(null))}
     >
       {(activeId === element.id || !hasChildren) && <StartTag element={element} closed />}
       {activeId !== element.id && hasChildren && (
@@ -182,7 +169,7 @@ function StartTag({ element, closed = false }) {
     <>
       <span>&lt;{element.component}</span>
       {Object.entries(element.props).map(([name, value], index) => (
-        <Attribute key={index} color={hsla(150, 100, 50, 1)} value={typeof value === "object" ? JSON.stringify(value) : value} name={name} />
+        <Attribute key={index} color={hsla(150, 100, 50, 1)} value={JSON.stringify(value)} name={name} />
       ))}
       {closed && <span>/</span>}
       <span>&gt;</span>

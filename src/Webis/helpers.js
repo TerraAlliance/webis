@@ -52,7 +52,6 @@ export function editElement(tree, elementId, updatedProps = {}, updatedChildren 
   const editInTree = (elements) => {
     for (const element of elements) {
       if (element.id === elementId) {
-        // Update the element's properties
         element.props = { ...element.props, ...updatedProps }
         if (updatedChildren !== null) element.children = updatedChildren
         if (updatedClassName !== null) element.className = updatedClassName

@@ -10,19 +10,15 @@ import { newId, getRandomCat } from "./helpers"
 // const elements = webis.get("elements")
 
 export const tree = observable([])
-
 export const selected = observable()
-
-export const properties = observable([])
-
+export const hovered = observable()
 export const classes = observable({
   container: {
     display: "flex",
     flexDirection: "row",
-    backgroundColor: "pink",
-    border: "2px solid deeppink",
+    backgroundColor: "hsla(320, 100%, 50%, 0.3)",
+    border: "2px solid hotpink",
     minHeight: "50px",
-    width: "100%",
     marginBottom: "2px",
     alignItems: "center",
     justifyContent: "center",
@@ -30,6 +26,9 @@ export const classes = observable({
     gap: "5px",
     boxSizing: "border-box",
     borderRadius: "10px",
+    flexWrap: "wrap",
+    flex: "1",
+    width: "100%",
   },
   font: { fontFamily: "Open Sans" },
   image: { borderRadius: "10px" },

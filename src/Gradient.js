@@ -435,7 +435,7 @@ class Gradient {
       }),
       e(this, "animate", (e) => {
         if (!this.shouldSkipFrame(e) || this.isMouseDown) {
-          if (((this.t += Math.min(e - this.last, 1e3 / 200)), (this.last = e), this.isMouseDown)) {
+          if (((this.t += Math.min(e - this.last, 1e3 / 300)), (this.last = e), this.isMouseDown)) {
             let e = 160
             this.isMetaKey && (e = -160), (this.t += e)
           }

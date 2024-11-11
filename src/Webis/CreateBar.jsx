@@ -30,15 +30,7 @@ function Content() {
       setItems={components.set}
       renderItem={(item) => (
         <div
-          style={{
-            margin: "5px 0px 5px 0px",
-            borderRadius: "5px",
-            backgroundColor: "hsla(220, 100%, 50%, 0.2)",
-            textAlign: "center",
-            cursor: "pointer",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsla(0, 100%, 50%, 0.2)")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsla(220, 100%, 50%, 0.2)")}
+          className="m-1 text-center cursor-pointer border-2 rounded border-blue-500/50 bg-blue-500/20 hover:bg-red-500/20 hover:border-red-500"
           onClick={(e) => {
             e.stopPropagation()
             addElement(tree, item.component, evaluateObject(item.props), item.children, selected.get()?.id, null)

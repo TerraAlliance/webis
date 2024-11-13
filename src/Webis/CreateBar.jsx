@@ -1,4 +1,4 @@
-import { HtmlDisplay } from "../ui/HtmlDisplay"
+import { HtmlDisplay } from "../3dgui/HtmlDisplay"
 import { SortableList } from "../ui/SortableList"
 
 import { selected, components, tree } from "./state"
@@ -11,7 +11,7 @@ export function CreateBar(props) {
         className="w-full h-full bg-blue-500/20 border border-blue-500/50 overflow-y-auto overflow-x-hidden rounded-lg"
         style={{ backgroundColor: "hsla(220, 100%, 50%, 0.2)", scrollbarGutter: "stable both-edges" }}
       >
-        <div className="pt-1 pb-1 text-white font-open-sans text-base box-border">
+        <div className="py-1 text-white font-open-sans text-base box-border">
           <Content />
         </div>
       </div>

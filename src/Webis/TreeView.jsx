@@ -5,7 +5,7 @@ import { restrictToVerticalAxis, restrictToFirstScrollableAncestor } from "@dnd-
 import { CSS, getEventCoordinates } from "@dnd-kit/utilities"
 import clsx from "clsx"
 
-import { HtmlDisplay } from "../ui/HtmlDisplay"
+import { HtmlDisplay } from "../3dgui/HtmlDisplay"
 import { tree, selected, hovered } from "./state"
 import { hsla } from "./helpers"
 
@@ -17,7 +17,7 @@ export function TreeView(props) {
         style={{ scrollbarGutter: "stable both-edges" }}
         onClick={(e) => (e.stopPropagation(), selected.set(null))}
       >
-        <div className="pt-1 pb-1 text-white font-open-sans text-base box-border">
+        <div className="py-1 text-white font-open-sans text-base box-border">
           <SortableList />
         </div>
       </div>
@@ -133,8 +133,8 @@ function Element({ element, activeId, depth = 0 }) {
     <div
       className={clsx(
         "m-1 p-0.5 rounded cursor-pointer border-2",
-        isHovered || isSelected ? "bg-emerald-500/50" : bgColors[depth % bgColors.length],
-        isHovered || isSelected ? "border-emerald-500/80" : borderColors[depth % borderColors.length]
+        isHovered ? "bg-emerald-500/30" : isSelected ? "bg-emerald-500/50" : bgColors[depth % bgColors.length],
+        isHovered ? "border-emerald-500/60" : isSelected ? "border-emerald-500/80" : borderColors[depth % borderColors.length]
       )}
       onClick={(e) => (e.stopPropagation(), selected.set(element))}
       onMouseOver={(e) => (e.stopPropagation(), hovered.set(element))}
@@ -177,13 +177,7 @@ function Attribute({ color, value, name }) {
   return (
     <>
       <span>&nbsp;{name}=</span>
-      <span style={{ color: color, cursor: "text" }}>
-        {/* &quot; */}
-        <span contentEditable suppressContentEditableWarning>
-          {value}
-        </span>
-        {/* &quot; */}
-      </span>
+      <span style={{ color: color, cursor: "text" }}>{value}</span>
     </>
   )
 }

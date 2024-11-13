@@ -4,12 +4,12 @@ import { useWindowSize } from "@uidotdev/usehooks"
 import { Canvas } from "@react-three/fiber"
 import { OrthographicCamera, OrbitControls } from "@react-three/drei"
 
-import { FlexBox } from "./ui/FlexBox"
+import { FlexBox } from "./3dgui/FlexBox.jsx"
 import { Gradient } from "./Gradient.js"
 import { Webis } from "./Webis/Webis"
-import { Dock } from "./ui/Dock.jsx"
-import { PageSlider } from "./ui/PageSlider.jsx"
-import { WebisIcon, FilesIcon } from "./ui/Icons"
+import { Dock } from "./3dgui/Dock.jsx"
+import { PageSlider } from "./3dgui/PageSlider.jsx"
+import { WebisIcon, FilesIcon } from "./3dgui/Icons.jsx"
 
 function App() {
   useEffect(() => {

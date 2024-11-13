@@ -1,11 +1,9 @@
 import cxs from "cxs"
 import clsx from "clsx"
-
-import { HtmlDisplay } from "../ui/HtmlDisplay"
-import { classes, tree, hovered } from "./state"
-import { hsla } from "./helpers"
-
 import { observer } from "@legendapp/state/react"
+
+import { HtmlDisplay } from "../3dgui/HtmlDisplay"
+import { classes, tree, hovered, selected } from "./state"
 
 export const WebView = observer((props) => {
   return (
@@ -30,20 +28,28 @@ const Content = observer(() => {
   return <>{renderElements(elements, classMap)}</>
 })
 
+const hoveredPattern = "repeating-linear-gradient(-45deg, hsla(160, 100%, 50%, 0.4) 0px, hsla(160, 100%, 50%, 0.4) 10px, transparent 10px, transparent 20px)"
+const selectedPattern = "repeating-linear-gradient(-45deg, hsla(160, 100%, 50%, 0.6) 0px, hsla(160, 100%, 50%, 0.6) 10px, transparent 10px, transparent 20px)"
+
 function renderElements(elements, classMap) {
   return elements.map((element) => {
     const { id, component: Component, props, children } = element
-    const { className, ...remainingProps } = props
+    const { className, style, ...remainingProps } = props
     const isHovered = hovered.get()?.id === element.id
+    const isSelected = selected.get()?.id === element.id
 
     return (
       <Component
+        key={id}
         className={clsx("no-twp", className && cxs(classMap[className]))}
-        {...remainingProps}
+        style={{
+          ...style,
+          backgroundColor: isSelected ? selectedPattern : isHovered ? hoveredPattern : style?.backgroundColor,
+          borderColor: isSelected ? "hsla(160, 100%, 50%, 0.6)" : isHovered ? "hsla(160, 100%, 50%, 0.4)" : style?.borderColor,
+        }}
         contentEditable
         suppressContentEditableWarning
-        key={id}
-        style={{ border: isHovered ? "2px solid " + hsla(150, 100, 50, 1) : props.style?.border, ...props.style }}
+        {...remainingProps}
       >
         {Array.isArray(children) ? renderElements(children, classMap) : children}
       </Component>

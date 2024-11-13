@@ -1,6 +1,6 @@
 import { useWindowSize } from "@uidotdev/usehooks"
 
-import { FlexBox } from "../ui/FlexBox"
+import { FlexBox } from "../3dgui/FlexBox"
 import { CreateBar } from "./CreateBar"
 import { StyleBar } from "./StyleBar"
 import { TreeView } from "./TreeView"
@@ -18,8 +18,8 @@ export function Webis(props) {
       <WebView grow={20} />
       <TreeView grow={16} />
       <FlexBox grow={5} gap={10} direction={"column"}>
-        <CreateBar grow={1} />
-        <StyleBar grow={1} />
+        <CreateBar grow={18} />
+        <StyleBar grow={20} />
       </FlexBox>
     </FlexBox>
   )

@@ -10,6 +10,7 @@ import { newId, getRandomCat } from "./helpers"
 // const elements = webis.get("elements")
 
 export const tree = observable([])
+export const tailwind = observable(false)
 export const selected = observable()
 export const hovered = observable()
 export const classes = observable({

@@ -43,9 +43,9 @@ function renderElements(elements, classMap) {
         key={id}
         className={clsx("no-twp", className && cxs(classMap[className]))}
         style={{
-          ...style,
-          backgroundColor: isSelected ? selectedPattern : isHovered ? hoveredPattern : style?.backgroundColor,
+          background: isSelected ? selectedPattern : isHovered ? hoveredPattern : style?.background || style?.backgroundColor,
           borderColor: isSelected ? "hsla(160, 100%, 50%, 0.6)" : isHovered ? "hsla(160, 100%, 50%, 0.4)" : style?.borderColor,
+          ...style,
         }}
         contentEditable
         suppressContentEditableWarning

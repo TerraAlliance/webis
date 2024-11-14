@@ -9,7 +9,7 @@ export default {
   plugins: [
     scopedPreflightStyles({
       isolationStrategy: isolateOutsideOfContainer(".no-twp", {
-        except: ".twp", // optional, to exclude some elements under .twp from being preflighted, like external markup
+        except: ".twp",
       }),
     }),
   ],
